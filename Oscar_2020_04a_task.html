@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en"> 
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="jquery-1.9.1.min.js"></script>
+     <script type="text/javascript" src="jquery.cookie.js"></script>	
+     <script type="text/javascript" src="cusacklabmturk.js"></script>
+     <link href="mturk_style.css" rel="stylesheet" type="text/css">
+     <link rel="stylesheet" href="css/screen.css" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="css/wowza.css" type="text/css" />
+    <script src="webrtc.js"></script>
+    <!-- Libraries -->
+
+    <!-- DASH-AVC/265 reference implementation -->
+    <script src="js/shaka-player.js"></script>
+</head>
+<body>
+
+
+    <script language="javascript">
+        var connectStr="https://wowza-cusacklab.org:443/vod/mp4:ComplexSet_1_480p.mp4/manifest.mpd"
+//        var connectStr="https://wowza-cusacklab.org:443/vod/mp4:complexcartoon_1.m4v/manifest.mpd"
+ 
+        var video;
+        var player;
+        
+        // When page ready
+        $(function(){
+            pageReady();
+
+            $('#videoplayer').hide();
+
+            if ( video == null )
+                        { video = document.querySelector("video"); }
+
+                        if ( player == null )
+                        { player = new shaka.player.Player(video); }
+
+                        // Attach the player to the window so that it can be easily debugged.
+                        window.player = player;
+
+                        // Listen for errors from the Player.
+                        player.addEventListener('error', failed );
+
+                        // Construct a DashVideoSource to represent the DASH manifest.
+                        //var mpdUrl = 'http://turtle-tube.appspot.com/t/t2/dash.mpd';
+                        if ( estimator != null )
+			{ estimator=null; }
+                        estimator = new shaka.util.EWMABandwidthEstimator();
+
+                        if ( source != null )
+                        { source = null; }
+
+                        source = new shaka.player.DashVideoSource(connectStr, null, estimator);
+
+                        // Load the source into the Player.
+                        player.load(source);
+        });
+
+        function supports_media_source()
+        {
+            "use strict";
+            var hasWebKit = (window.WebKitMediaSource !== null && window.WebKitMediaSource !== undefined),
+                hasMediaSource = (window.MediaSource !== null && window.MediaSource !== undefined);
+            return (hasWebKit || hasMediaSource);
+        }
+
+        function checkTime()
+        {
+            myobj=$('#videoObj')[0]
+            alert("Time is " + myobj.currentTime)
+        }
+    </script>
+
+<div id='instructions' class='taskinstructions'>
+    <div id='instructioncontent'>
+    <h1 >Get ready for the task!</h1>
+    Please check your baby's head and eyes are clearly visible in the webcam below, then press 
+    <button id="connectObj" type="button" style="width:80px" onclick="JavaScript:connect()">Start experiment</button>
+    </div>
+</div>
+    <div id='videoplayer' class="container" class='center'>
+
+
+        <!-- EXAMPLE PLAYER: WIDTH of this player should be 630px, height will vary depending on the example-->
+        <div class="span-16" class='center'>
+            <div id="notsupported" style="display:none">
+                <br/>
+                <br/>
+                <br/>
+                <h2><b>The MediaSource API is not supported by this browser</b></h2>
+                <br/>
+                <h3>Please view in a browser that supports the MediaSource API, such as Google Chrome.</h3>
+                <br/>
+                <br/>
+            </div>
+            <div id="supported" style="display:none" class='center'>
+                <div>
+                    <style>
+                        video {
+                            background-color: #000000;
+                        }
+                    </style>
+                    <video id="videoObj" x-webkit-airplay="allow" alt="Video for infant" autoplay></video>
+                </div>
+<!--                <button id="checkTime" type="button" onclick="JavaScript:checkTime()">Check time!</button>
+    -->            
+            </div>
+            <label id="statusStr" size = "100" type="text" placeholder="" value="">Disconnected</label>
+
+            <div id="debug_log" style="height: 425px; width: 630px; overflow: auto; clear: both;">
+            </div>
+
+        <script>
+            if ( supports_media_source() ) {
+                supported.style.display="";
+                videoObj.style.display="";
+            }
+            else {
+                notsupported.style.display="";
+            }
+		var video;
+		var player;
+		var source; 
+		var estimator;
+
+            function connect()
+            {
+                if(connectObj.textContent == "Stop") 
+			{
+			dashStop();
+			connectObj.textContent = "Start";
+			statusStr.textContent = "Disconnected";
+                	}
+                else {
+                        var now = new Date().getTime();
+                        startPublisher('oscar'+now);
+                        document.body.style.cursor = 'none';
+                        $('#videoplayer').show();
+                        // var elem = document.getElementById("videoplayer");
+                        // if (elem.requestFullscreen) {
+                        // elem.requestFullscreen();
+                        // } else if (elem.mozRequestFullScreen) {
+                        // elem.mozRequestFullScreen();
+                        // } else if (elem.webkitRequestFullscreen) {
+                        // elem.webkitRequestFullscreen();
+                        // } else if (elem.msRequestFullscreen) { 
+                        // elem.msRequestFullscreen();
+                        // }
+
+                        $('#instructioncontent').hide();
+                        $('#videowebcam').hide();
+                        connectObj.textContent = "Stop";
+                        statusStr.textContent = "";
+
+
+
+
+                	}
+            }
+
+	function failed(e)
+	{
+	var done = false;
+	if ( e.detail == 'Error: Network failure.' )
+		{
+		statusStr.textContent = 'Network Connection Failed.';
+		done = true;
+		}
+        if ( e.detail.status!=200 && done == false )
+                {
+		switch ( e.detail.status )
+			{
+			case 404:
+			statusStr.textContent = e.detail.url+' not found.';
+			break;
+			default:
+	                statusStr.textContent = 'Error '+e.detail.status+' for '+e.detail.url;
+			break;
+                	}
+		}
+        }
+
+	function dashStop()
+	{
+		if(player!=null)
+		{
+		player.unload();
+		}
+	connectObj.textContent = "Start";
+	statusStr.textContent = "Disconnected";
+	}
+
+            </script>
+        </div>
+
+    
+
+
+    </div>
+
+  
+    <div id='videowebcam' class='taskinstructions'>
+    <video id="localVideo" muted autoplay playsinline style="height:480px;"></video>
+    </div>
+
+    <script type="text/javascript">
+        pageReady();
+    </script>
+
+    <div>
+        <span id="sdpDataTag"></span>
+    </div>
+
+
+
+
+
+</body>
+</html>

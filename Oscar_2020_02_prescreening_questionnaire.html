@@ -1,0 +1,93 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="jquery-1.9.1.min.js"></script>
+     <script type="text/javascript" src="jquery.cookie.js"></script>	
+     <script type="text/javascript" src="cusacklabmturk.js"></script>
+	 <link href="mturk_style.css" rel="stylesheet" type="text/css">
+     </head>
+<body>
+<script language="javascript">
+$(function() {
+
+	$('#futurestudies').hide();
+
+$('#mturk_form').submit(function() {
+	// Save prescreening details
+	cmt['prescreening']=JSON.stringify($('#mturk_form').serializeArray());
+
+
+	// Now Decide on next page
+	req={'Age':'Yes', 'Preterm':'No', 'Abnormal':'No','Perinatal':'No'};
+	pass=true;
+	for (var key in req) {
+		console.log(key + '=' + $("input[name='"+key+"']:checked").val())
+		r=$("input[name='"+key+"']:checked").val();
+		if (r!=req[key]) pass=false;
+	}
+
+	if (pass)
+		// Move on to instructions
+		cmtNextPage(2)
+	else
+	{
+		$('#mturk_form').hide();
+		$('#futurestudies').show();
+	}
+	return false; // cancel form submit action
+});
+
+});
+
+
+
+
+	
+	
+	</script>
+
+  
+  <!-- questionnaire -->
+
+<div> <img src="images/trinity_small.jpg"/></div>
+    <p>&nbsp; </p>
+  <h1 align="center"><b>Prescreening Form</b></h1>
+    <p>To take part in this research study your infant must complete an online activity. Since this study aims to assess typical performance, we are specifically looking for infants who were born at term and without congenital abnormalities. In follow-up studies, we will likely expand these inclusion criteria. We would like you to answer the questions below. If your infant is suitable for the study, you will be immediately directed to a page with more information about the study and an online consent form. Please fill out the below form as accurately and as honestly as possible. There are no right or wrong answers. All of your responses are confidential.
+</p>
+
+<p>&nbsp;</p>
+    
+ 
+
+<form name="mturk_form" id='mturk_form'>
+	<ul>
+	<li>
+	Is your infant between 2 and 12 months old? 
+		<input type="radio" id="ChildAgeYes" name="Age" value="Yes" required/> Yes
+		<input type="radio" id="ChildAgeNo" name="Age" value="No" /> No 
+	</li>	 
+
+	<li>Was your infant born preterm (i.e. earlier than 37 weeks into the pregnancy?) 
+		<input type="radio" id="PretermYes" name="Preterm" value="Yes" required/>Yes 
+		<input type="radio" id="PretermNo" name="Preterm" value="No" /> No
+	</li>
+
+
+	<li>Does your infant have any physical, intellectual or developmental abnormalities (e.g. blindness, cerebral palsy, Down syndrome, etc.)?
+		<input type="radio" id="AbnormalYes" name="Abnormal" value="Yes" required />Yes
+		 <input type="radio" id="AbnormalNo" name="Abnormal" value="No"/> No
+	</li>    
+  	<li>Was your infant diagnosed with perinatal brain injury?
+		<input type="radio" id="PerinatalYes" name="Perinatal" value="Yes" required />Yes
+		<input type="radio" id="PerinatalNo" name="Perinatal" value="No"/>No
+	  </li>
+    </ul>
+  	<p>Please answer all of the questions Please double check your answers if you think you are finished but do not see the continue button. Thank you for your time. 
+  <p align="center"> <p align="center"><em> <input type="submit"  value="Continue &gt;&gt;"/>  </em></p>
+</form>
+</body>
+
+<div id='futurestudies'>
+<b>	Thank you. Unfortunately, based on the prescreening questionnaire, you and your child are ineligible for participation in this study. Thank you for your interest.</b>
+</div>
+</html>

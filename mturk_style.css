@@ -1,0 +1,37 @@
+body {
+	font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, "sans-serif";
+}
+
+#consentform p em {
+	text-align: center;
+}
+#consentform p em {
+	text-align: left;
+}
+#consentform p em {
+	text-align: right;
+}
+.center {
+	text-align: center;
+}
+
+li {font-weight: bold ;
+	margin-bottom:20;
+}
+
+input {
+	font-weight: normal ; 
+	margin-left: 20;  
+}
+
+.center { margin: 0 auto; width: 1000px; }
+
+.nocursor { cursor:none; }
+
+.taskinstructions {margin: 0 auto; display:block; width: 1000px; height: 120px; text-align: center;}
+
+.videowebcam  { margin: 0 auto; width: 630px; }
+
+.tablecaptions {width: 200px; color: #880000;}
+.tablecaptionsgood {width: 200px; color: #006600;}
+.tableimgs {width: 200px; padding-right: 40px; }

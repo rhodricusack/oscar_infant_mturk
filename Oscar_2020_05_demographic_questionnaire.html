@@ -1,0 +1,111 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="jquery-1.9.1.min.js"></script>
+     <script type="text/javascript" src="jquery.cookie.js"></script>	
+     <script type="text/javascript" src="cusacklabmturk.js"></script>
+	 <link href="mturk_style.css" rel="stylesheet" type="text/css">
+     </head>
+<body>
+<script language="javascript">
+$(function() {
+		$("#experimentData").val(JSON.stringify(cmt));
+		document.mturk_form.action=cmt.turksubmitto;
+		$("#assignmentId").val(cmt.assignmentId);
+		$("#workerId").val(cmt.workerId);
+	});
+	</script>
+
+  
+  <!-- questionnaire -->
+<tr>
+  <td ><p> <img src="images/trinity_small.jpg"/></p>
+    <p>&nbsp; </p>
+    <table width="600" border="0" align="center" cellpadding="0" cellspacing="0" class="center">
+      <tr>
+   <td><p><span class="centertwentyfour">The videos have completed, thank you.</span></p>
+    <p><span class="centertwentyfour"> </span><strong class="center"><span class="centertwentyfour">Now, please answer the following short questionnaire to complete the study.</span></strong></p></td>
+  </tr>
+</table>
+    
+    <p>&nbsp;</p>
+    
+<div id = "mturk_form">  
+
+<form name="mturk_form" method="post" action="" >
+	<input id="experimentData" name="experimentData" type="hidden"></input>       
+  	<input type="hidden" id="workerId" name="workerId" ></input>       
+  	<input type="hidden" id="assignmentId" name="assignmentId" value="">  
+	 
+
+	<p><strong>1) Infant's date of birth </strong></p>
+  		<p><input name='q1' type='date' required="required" class='InputText' id='q1' autocomplete="off" value='' /> (*) </p>
+	<p>&nbsp;</p>
+
+
+	<p><strong>2) Infant's sex </strong>:</p>
+		<p><input name='q2' type='text' required="required" class='InputText' id='q2' autocomplete="off" value='' /> (*) </p>
+	<p>&nbsp;</p>
+
+	<p><strong>3) Infant's current level of vocabulary:</strong> (*)</p>
+	<p><input name="q3" type="radio" required="required" value="1" />
+		Knows no words/only 'baby talk'
+	</p>
+	<p><input name="q3" type="radio" required="required" value="2" />
+		Has said their first word
+	</p>
+	<p><input name="q3" type="radio" required="required" value="3" />
+		Can communicate their intentions through speech
+	</p>
+	<p><input name="q3" type="radio" required="required" value="4" />
+		Can speak in full sentences.
+	</p>
+	<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><strong> ABOUT YOU </strong></p>
+	<p><strong>1) Age in years: </strong></p>
+  		<p><input name='q1' type='text' required="required" class='InputText' id='q1' autocomplete="off" value='' /> (*) </p>
+	<p>&nbsp;</p>
+
+
+	<strong>2) Country of residence:</strong>
+<p><input name='q4' type='text' required="required" class='InputText' id='q4' autocomplete="off" value='' /> (*) </p>
+	<p>&nbsp;</p>
+
+
+	<strong>3) First language:</strong>
+	<p><input name='q5' type='text' required="required" class='InputText' id='q5' autocomplete="off" value='' /> (*) </p>
+	<p>&nbsp;</p>
+
+
+	<p><strong>4) Highest level of education:</strong> (*)</p>
+	<p><input name="q6" type="radio" required="required" value="1" />
+	Did not finish high school/secondary school.
+	</p>
+	<p><input name="q6" type="radio" required="required" value="2" />
+	Graduated from high school/secondary school.
+	</p>
+	<p><input name="q6" type="radio" required="required" value="3" />
+	Graduated from university/college.
+	</p>
+	<p><input name="q6" type="radio" required="required" value="4" />
+	Obtained a higher degree (Master's or PhD degree).
+	</p>
+	<p>&nbsp;</p>
+
+	<p><strong>5) Occupation</strong></p>
+  	<p><input name='q7' type='text' required="required" class='InputText' id='q7' autocomplete="off" value='' /> (*) </p>
+<br />
+  	<p>If you'd like more information about the purpose of this study <a href="Debriefing Sheet.docx" target="_blank" >click here</a>.</p>
+
+    
+  	
+  	<p>Thank you from the Cusack Laboratory at Trinity College Dublin. Please submit the hit to request payment. 
+  <p align="center">
+ 	<input type="submit" value="Submit HIT"/>    
+</form>
+</div>
+</body>
+</html>

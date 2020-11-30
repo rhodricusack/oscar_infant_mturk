@@ -1,0 +1,295 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en"> 
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="jquery-1.9.1.min.js"></script>
+     <script type="text/javascript" src="jquery.cookie.js"></script>	
+     <script type="text/javascript" src="cusacklabmturk.js"></script>
+     <link href="mturk_style.css" rel="stylesheet" type="text/css">
+     <link rel="stylesheet" href="css/screen.css" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="css/wowza.css" type="text/css" />
+    <script src="webrtc.js"></script>
+    <!-- Libraries -->
+
+    <!-- DASH-AVC/265 reference implementation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/3.0.0/shaka-player.compiled.js"></script>
+</head>
+<body>
+
+
+    <script language="javascript">
+        var connectStr=""
+//        var connectStr="https://wowza-cusacklab.org:443/vod/mp4:complexcartoon_1.m4v/manifest.mpd"
+ 
+        var video;
+        var player;
+   
+        // When page ready
+        $(function(){
+
+            // Next trial
+            cmt.stimnumber++;
+
+            $('#trialnumber').html(`Trial ${cmt.stimnumber+1}/${cmt.stimlist.length}`);
+
+            // Test clips or the real videos
+            if (cmt.testClipsOnly)
+                connectStr="https://d2hrs0h0x7oetk.cloudfront.net:443/vod/mp4:trim.mp4/manifest.mpd";
+            else
+                connectStr="https://d2hrs0h0x7oetk.cloudfront.net:443/vod/mp4:" + cmt.stimlist[cmt.stimnumber] + "/manifest.mpd"
+
+            // Set webcam connection up
+            pageReady();
+
+            $('#waitForWebcam').show();
+            $('#startTask').hide();
+            $('#videoplayer').hide();
+
+            initApp();
+
+        });
+
+
+
+        function initApp() {
+        // Install built-in polyfills to patch browser incompatibilities.
+        shaka.polyfill.installAll();
+
+        // Check to see if the browser supports the basic APIs Shaka needs.
+        if (shaka.Player.isBrowserSupported()) {
+            // Everything looks good!
+            initPlayer();
+        } else {
+            // This browser does not have the minimum set of APIs we need.
+            console.error('Browser not supported!');
+        }
+        }
+
+        function initPlayer() {
+        // Create a Player instance.
+        video = document.getElementById('videoObj');
+        player = new shaka.Player(video);
+
+        // Attach player to the window to make it easy to access in the JS console.
+        window.player = player;
+
+        // Listen for error events.
+        player.addEventListener('error', onErrorEvent);
+
+        // Try to load a manifest.
+        // This is an asynchronous process.
+        player.load(connectStr).then(function() {
+            // This runs if the asynchronous load is successful.
+            console.log('The video has now been loaded!');
+        }).catch(onError);  // onError is executed if the asynchronous load fails.
+        }
+
+
+        function supports_media_source()
+        {
+            "use strict";
+            var hasWebKit = (window.WebKitMediaSource !== null && window.WebKitMediaSource !== undefined),
+                hasMediaSource = (window.MediaSource !== null && window.MediaSource !== undefined);
+            return (hasWebKit || hasMediaSource);
+        }
+
+        function checkTime()
+        {
+            myobj=$('#videoObj')[0]
+            alert("Time is " + myobj.currentTime)
+        }
+
+        function onErrorEvent(event) {
+        // Extract the shaka.util.Error object from the event.
+        onError(event.detail);
+        }
+
+        function onError(error) {
+        // Log the error.
+        console.error('Error code', error.code, 'object', error);
+        }
+    </script>
+
+<div id='instructions' class='taskinstructions'>
+    <div id='instructioncontent'>
+    <h1 >Get ready for the task!</h1>
+    <h2 id='trialnumber'> -trial number ? -</h2>
+    Please check your baby's head and eyes are clearly visible in the webcam below.
+    <div id='waitForWebcam'>Waiting for webcam setup.</div>
+    <div id='startTask'>
+        When you are ready, press 
+    <button enabled=false id="connectObj" type="button" style="width:80px" onclick="JavaScript:connect()">Start task</button>
+    (there may be a brief pause before the video starts)
+</div> 
+    </div>
+</div>
+    <div id='videoplayer' class="container" class='center' width='100%'>
+
+
+        <!-- EXAMPLE PLAYER: WIDTH of this player should be 630px, height will vary depending on the example-->
+        <div class="span-16" class='center'>
+            <div id="notsupported" style="display:none">
+                <br/>
+                <br/>
+                <br/>
+                <h2><b>The MediaSource API is not supported by this browser</b></h2>
+                <br/>
+                <h3>Please view in a browser that supports the MediaSource API, such as Google Chrome.</h3>
+                <br/>
+                <br/>
+            </div>
+            <div id="supported" style="display:none" class='center'>
+                <div>
+                    <style>
+                        video {
+                            background-color: #000000;
+                        }
+                    </style>
+                    <video id="videoObj" x-webkit-airplay="allow" alt="Video for infant" width='100%'></video>
+                </div>
+<!--                <button id="checkTime" type="button" onclick="JavaScript:checkTime()">Check time!</button>
+    -->            
+            </div>
+            <label id="statusStr" size = "100" type="text" placeholder="" value="">Disconnected</label>
+
+            <div id="debug_log" style="height: 425px; width: 630px; overflow: auto; clear: both;">
+            </div>
+
+        <script>
+            if ( supports_media_source() ) {
+                supported.style.display="";
+                videoObj.style.display="";
+            }
+            else {
+                notsupported.style.display="";
+            }
+		var video;
+		var player;
+		var source; 
+		var estimator;
+
+            function connect()
+            {
+                if(connectObj.textContent == "Stop") {
+                    dashStop();
+                    connectObj.textContent = "Start";
+                    statusStr.textContent = "Disconnected";
+                }
+                else {
+                        // // Throbber
+                        //  $('#videoObj').addEventListener('buffering', function(event) {
+                        // spinner_.style.display = event.buffering ? 'block' : 'none';
+                        // });
+
+                        var now = new Date().getTime();
+                        startPublisher('oscar_v1_'+ cmt.assignmentId +'_' + cmt.workerId + '_' + now);
+                        document.body.style.cursor = 'none';
+                        $('#videoplayer').show();
+                        $('#taskinstructions').hide();
+                        //document.documentElement.requestFullscreen();
+                        var elem = document.getElementById("videoObj");
+                        if (elem.requestFullscreen) {
+                        elem.requestFullscreen();
+                        } else if (elem.mozRequestFullScreen) {
+                        elem.mozRequestFullScreen();
+                        } else if (elem.webkitRequestFullscreen) {
+                        elem.webkitRequestFullscreen();
+                        } else if (elem.msRequestFullscreen) { 
+                        elem.msRequestFullscreen();
+                        }
+
+                        $('#instructioncontent').hide();
+                        $('#videowebcam').hide();
+                        connectObj.textContent = "Stop";
+                        statusStr.textContent = "";
+
+                        // Starting time log. 
+                        basetime=Date.now();
+                        cmt.trialStartTiming[cmt.stimnumber]={'wallclock':basetime, 'playback_duration':  document.getElementById('videoObj').duration};
+                        cmt.trialOngoingTiming[cmt.stimnumber]=[];
+
+                        // Ongoing trial log. 
+                        setInterval(function(){   
+                            loc=$("#localVideo");           
+                            cmt.trialOngoingTiming[cmt.stimnumber].push({
+                                'wallclock': Date.now()-basetime,
+                                'playback': $("#videoObj")[0].currentTime,
+                                'webcam': $("#localVideo")[0].currentTime,                       
+                            });
+                                
+                        }, 1000);
+
+                        // Next trial or next page
+                        $('#videoObj').get(0).onended=function() {
+                            if ((cmt.stimnumber+1)>=cmt.stimlist.length) 
+                                cmtNextPage(4); 
+                            else 
+                                cmtNextPage(3);
+                        };
+                            
+                        // play it!
+                        $('#videoObj').get(0).play();
+
+
+
+                	}
+            }
+
+	function failed(e)
+	{
+	var done = false;
+	if ( e.detail == 'Error: Network failure.' )
+		{
+		statusStr.textContent = 'Network Connection Failed.';
+		done = true;
+		}
+        if ( e.detail.status!=200 && done == false )
+                {
+		switch ( e.detail.status )
+			{
+			case 404:
+			statusStr.textContent = e.detail.url+' not found.';
+			break;
+			default:
+	                statusStr.textContent = 'Error '+e.detail.status+' for '+e.detail.url;
+			break;
+                	}
+		}
+        }
+
+	function dashStop()
+	{
+		if(player!=null)
+		{
+		player.unload();
+		}
+	connectObj.textContent = "Start";
+	statusStr.textContent = "Disconnected";
+	}
+
+            </script>
+        </div>
+
+    
+
+
+    </div>
+
+  
+    <div id='videowebcam' class='taskinstructions'>
+    <video id="localVideo" muted autoplay playsinline style="height:480px;"></video>
+    </div>
+
+
+    <div>
+        <span id="sdpDataTag"></span>
+    </div>
+
+
+
+
+
+</body>
+</html>
